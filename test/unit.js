@@ -30,13 +30,15 @@ unit['data.update basic'] = function(done){
     } catch (e) { done(e); }
   });
 };
-unit['data.read basic'] = function(done){
-  data.read('test', 'unitDataCRUD', function (err, jsonData) {
-    try {
-      assert.equal(err, false);
-      assert.equal( JSON.stringify(jsonData), JSON.stringify({ update: 'update' }));
-      done(false);
-    } catch (e) { done(e); }
+unit['data.read basic'] = function (done) {
+  data.create('test', 'unitDataREAD', { 'test': 'test' }, function (err) {
+    data.read('test', 'unitDataREAD', function (err, jsonData) {
+      try {
+        assert.equal(err, false);
+        assert.equal( JSON.stringify(jsonData), '{"test":"test"}');
+        done(false);
+      } catch (e) { done(e); }
+    });
   });
 };
 
