@@ -28,42 +28,52 @@ helpers.makeGetRequest = function(path,callback){
   };
 
   // Send the request
-  var req = http.request(requestDetails,function(res){
+  var req = http.request(requestDetails, function(res){
       callback(res);
   });
   req.end();
 };
 
 // The main init() function should be able to run without throwing.
-api['app.init should start without throwing'] = function(done){
-  assert.doesNotThrow(function(){
+api['app.init should start without throwing'] = function (done) {
+  try {
+  assert.doesNotThrow(function () {
     app.init(function(err){
-      done();
-    })
-  },TypeError);
+      done(false);
+    });
+  }, TypeError);
+  } catch (e) { done(e); }  
 };
 
 // Make a request to /ping
 api['/ping should respond to GET with 200'] = function(done){
-  helpers.makeGetRequest('/ping',function(res){
-    assert.equal(res.statusCode,200);
-    done();
+  helpers.makeGetRequest('/ping', function (res) {
+    try {
+      assert.equal(res.statusCode,200);
+      done(false);
+    } catch (e) { done(e); }
   });
 };
 
 // Make a request to /api/users
 api['/api/users should respond to GET with 400'] = function(done){
-  helpers.makeGetRequest('/api/users',function(res){
-    assert.equal(res.statusCode,400);
-    done();
+  helpers.makeGetRequest('/api/users', function (res) {
+    try {    
+      assert.equal(res.statusCode,400);
+      done(false);
+    } catch (e) { done(e); }
+    
   });
 };
 
 // Make a request to a random path
 api['A random path should respond to GET with 404'] = function(done){
-  helpers.makeGetRequest('/this/path/shouldnt/exist',function(res){
-    assert.equal(res.statusCode,404);
-    done();
+  helpers.makeGetRequest('/this/path/shouldnt/exist', function (res) {
+    try {    
+      assert.equal(res.statusCode,404);
+      done(false);
+    } catch (e) { done(e); }
+      
   });
 };
 
