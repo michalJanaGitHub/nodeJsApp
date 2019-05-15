@@ -8,13 +8,29 @@ const helpers = require('./../lib/helpers.js');
 const logs = require('./../lib/logs.js');
 const exampleDebuggingProblem = require('./../lib/exampleDebuggingProblem.js');
 const assert = require('assert');
-const data = require('./../lib/data.js');
+const _data = require('./../lib/data.js');
+const to = require('./../lib/to');
 
 // Holder for Tests
 let unit = {};
 
-unit['data.create basic'] = function(done){
-  data.create('test', 'unitDataCRUD', { 'test': 'test' }, function (err) {
+unit['data.Async CRUD'] = async function (done) {
+  let err, data;
+
+  if (!err) [err]       = await to(_data.createA('test', 'uniAsyncCRUD', { "test": "test" }));
+  if (!err) [err]       = await to(_data.updateA('test', 'uniAsyncCRUD', { "update": "update" }));
+  if (!err) [err, data] = await to(_data.readA('test', 'uniAsyncCRUD'));
+  if (!err) [err]       = await to(_data.deleteA('test', 'uniAsyncCRUD'));
+
+  try {
+    assert.equal(err, null);
+    assert.equal(JSON.stringify(data), JSON.stringify({ "update": "update" }));
+    done(false);
+  } catch (e) { done(e); }
+};
+
+unit['data.create basic'] = async function (done) {
+  _data.create('test', 'unitDataCRUD', { 'test': 'test' }, function (err) {
     try {
       assert.equal(err, false);
       done(false);
@@ -22,28 +38,29 @@ unit['data.create basic'] = function(done){
   });
 };
 
-unit['data.update basic'] = function(done){
-  data.update('test', 'unitDataCRUD', { update: 'update' }, function (err) {
+unit['data.update basic'] = function (done) {
+  _data.update('test', 'unitDataCRUD', { update: 'update' }, function (err) {
     try {
       assert.equal(err, false);
       done(false);
     } catch (e) { done(e); }
   });
 };
+
 unit['data.read basic'] = function (done) {
-  data.create('test', 'unitDataREAD', { 'test': 'test' }, function (err) {
-    data.read('test', 'unitDataREAD', function (err, jsonData) {
+  _data.create('test', 'unitDataREAD', { 'test': 'test' }, function (err) {
+    _data.read('test', 'unitDataREAD', function (err, jsonData) {
       try {
         assert.equal(err, false);
-        assert.equal( JSON.stringify(jsonData), '{"test":"test"}');
+        assert.equal(JSON.stringify(jsonData), '{"test":"test"}');
         done(false);
       } catch (e) { done(e); }
     });
   });
 };
 
-unit['data.delete basic'] = function(done){
-  data.delete('test', 'unitDataCRUD', function (err) {
+unit['data.delete basic'] = function (done) {
+  _data.delete('test', 'unitDataCRUD', function (err) {
     try {
       assert.equal(err, null);
       done(false);
@@ -61,8 +78,8 @@ unit['logs.list should callback a false error and an array of log names'] =
         assert.ok(logFileNames.length > 1);
         done(false);
       } catch (e) { done(e); }
-  });
-};
+    });
+  };
 
 // // Logs.truncate should not throw if the logId does not exist
 // unit['logs.truncate should not throw if the logId does not exist, should callback an error instead'] = function(done){

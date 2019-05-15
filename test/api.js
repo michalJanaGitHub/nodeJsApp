@@ -4,35 +4,54 @@
  */
 
 // Dependencies
-var app = require('./../index');
-var assert = require('assert');
-var http = require('http');
-var config = require('./../lib/config');
+const app = require('./../index');
+const assert = require('assert');
+const http = require('http');
+const config = require('./../lib/config');
 
 // Holder for Tests
-var api = {};
+let api = {};
 
 // Helpers
-var helpers = {};
-helpers.makeGetRequest = function(path,callback){
+let helpers = {};
+helpers.makeGetRequest = function (path, method, callback, payload = '{}') {
+  method = method.toUpperCase();
   // Configure the request details
-  var requestDetails = {
+  let requestDetails = {
     'protocol' : 'http:',
     'hostname' : 'localhost',
     'port' : config.httpPort,
-    'method' : 'GET',
-    'path' : path,
+    'method' : method,
+    'path': path,
+    'body': {body:JSON.stringify(payload)},
     'headers' : {
       'Content-Type' : 'application/json'
     }
   };
 
   // Send the request
-  var req = http.request(requestDetails, function(res){
+  let req = http.request(requestDetails, function(res){
       callback(res);
   });
   req.end();
 };
+
+// // Make a request to /ping
+// api['api/tokens return a token'] = function (done) {
+//   let payload = {
+//     phone: 1234567890,
+//     password: "password"
+//   };
+//   helpers.makeGetRequest('api/tokens', 'post', callback, payload) 
+  
+//   function callback (resCode, tokenObject){
+
+//   }
+// };
+
+
+
+
 
 // The main init() function should be able to run without throwing.
 api['app.init should start without throwing'] = function (done) {
@@ -47,7 +66,7 @@ api['app.init should start without throwing'] = function (done) {
 
 // Make a request to /ping
 api['/ping should respond to GET with 200'] = function(done){
-  helpers.makeGetRequest('/ping', function (res) {
+  helpers.makeGetRequest('/ping', 'get', function (res) {
     try {
       assert.equal(res.statusCode,200);
       done(false);
@@ -57,7 +76,7 @@ api['/ping should respond to GET with 200'] = function(done){
 
 // Make a request to /api/users
 api['/api/users should respond to GET with 400'] = function(done){
-  helpers.makeGetRequest('/api/users', function (res) {
+  helpers.makeGetRequest('/api/users', 'get', function (res) {
     try {    
       assert.equal(res.statusCode,400);
       done(false);
@@ -68,7 +87,7 @@ api['/api/users should respond to GET with 400'] = function(done){
 
 // Make a request to a random path
 api['A random path should respond to GET with 404'] = function(done){
-  helpers.makeGetRequest('/this/path/shouldnt/exist', function (res) {
+  helpers.makeGetRequest('/this/path/shouldnt/exist', 'get', function (res) {
     try {    
       assert.equal(res.statusCode,404);
       done(false);

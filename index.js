@@ -3,6 +3,13 @@
  *
  */
 
+
+// To implement:
+// process.on('unhandledRejection', (err) => { 
+//   console.error(err)
+//   process.exit(1)
+// })
+
 // Dependencies
 var server = require('./lib/server');
 var workers = require('./lib/workers');

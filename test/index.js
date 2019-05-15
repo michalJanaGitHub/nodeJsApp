@@ -15,94 +15,65 @@ _app.tests = {};
 // Dependencies
 _app.tests.unit = require('./unit');
 _app.tests.api = require('./api');
+to = require('./../lib/to');
 
-// Count all the tests
-_app.countTests = function () {
-  var noOfTestsRun = 0;
-  for (var key in _app.tests) {
-    if (_app.tests.hasOwnProperty(key)) {
-      let subTests = _app.tests[key];
-      for (var testName in subTests) {
-        if (subTests.hasOwnProperty(testName) && testName !== 'runTest') {
-          noOfTestsRun++;
-        }
-      }
-    }
-  }
-  return noOfTestsRun;
-};
 
-// Run all the tests, collecting the errCount and successfulTests
-_app.runTests = function () {
-  let errCount = [];
+// Run the tests
+runTests();
+
+// Run all the tests, collecting the errorsArr and successfulTests
+function runTests() {
+  let errorsArr = [];
   let successfulTests = 0;
-  let testsCount = _app.countTests();
+  let testsCount = 0;
   let noOfTestsRun = 0;
 
-  
-  cycleTests();
-  
-  function cycleTests (callback) {
-    for (var key in _app.tests) {
-      if (_app.tests.hasOwnProperty(key)) {
-        cycleSubTests (key);
-      }
-    }
-    // callback();
-  }
+  console.log("");
+  console.log("");
+  console.log("------------BEGIN TEST-----------");
+  console.log("");
 
-  function cycleSubTests(key) {
-    let subTests = _app.tests[key];
-    for (var testName in subTests) {
-      if (subTests.hasOwnProperty(testName)) {
-        if (testName !== 'runTest') runTest(testName, subTests);
-      }
-    }
-  }  
+  cycleTests(_app.tests);
 
-  function runTest(testName, subTests) {
-    let testValue = subTests[testName];
-    // Call the test
-    testValue( (res) => {
-      if (res === false) whenDone(testName);
-      else whenFailed(testName, res);
+  function cycleTests(testsObject) {
+    Object.keys(testsObject).map(subTests => {
+      Object.keys(testsObject[subTests]).map(test => {
+        testsCount++;
+        testsObject[subTests][test](function (err) {
+          logWhenFinished(test, err);
+        });
+      });
     });
   }
 
-  function whenDone(testName){
-    console.log('\x1b[32m%s\x1b[0m', testName);
-    noOfTestsRun++;
-    successfulTests++;
-    if (noOfTestsRun == testsCount) {
-      _app.produceTestReport(testsCount, successfulTests, errCount);
+  function logWhenFinished(testName, err) {
+    // If it throws, then it failed, so capture the error thrown and log it in red
+    if (err) {
+      errorsArr.push({
+        'name': testName,
+        'error': err
+      });
+      console.log('\x1b[31m%s\x1b[0m', testName);
+    } else {
+      console.log('\x1b[32m%s\x1b[0m', testName);
+      successfulTests++;
     }
-  }
-  
-  function whenFailed(testName, err) {
-     // If it throws, then it failed, so capture the error thrown and log it in red
-     errCount.push({
-      'name': testName,
-      'error': err
-    });
-    console.log('\x1b[31m%s\x1b[0m', testName);
     noOfTestsRun++;
-    if (noOfTestsRun == testsCount) {
-      _app.produceTestReport(testsCount, successfulTests, errCount);
-    }   
+    if (noOfTestsRun == testsCount)
+      produceTestReport(testsCount, successfulTests, errorsArr);
   }
 
-};
-
+}
 
 // Product a test outcome report
-_app.produceTestReport = function (testsCount, successfulTests, errCount) {
+function produceTestReport(testsCount, successfulTests, errorsArr) {
 
 
   // If there are errors, print them in detail
-  if (errCount.length > 0) {
-    console.log("--------BEGIN ERROR DETAILS--------");
+  if (errorsArr.length > 0) {
+    console.log("-------BEGIN ERROR DETAILS-------");
     console.log("");
-    errCount.forEach(function (testError) {
+    errorsArr.forEach(function (testError) {
       console.log('\x1b[31m%s\x1b[0m', testError.name);
       console.log(testError.error);
       console.log("");
@@ -111,19 +82,17 @@ _app.produceTestReport = function (testsCount, successfulTests, errCount) {
     console.log("--------END ERROR DETAILS--------");
   }
 
-
   console.log("");
-  console.log("--------BEGIN TEST SUMMARY--------");
+  console.log("--------BEGIN TEST SUMMARY---------");
   console.log("");
   console.log("Total Tests: ", testsCount);
   console.log("Pass: ", successfulTests);
-  console.log("Fail: ", errCount.length);
+  console.log("Fail: ", errorsArr.length);
   console.log("");
-  console.log("--------END TEST REPORT--------");
+  console.log("----------END TEST REPORT----------");
+  console.log("");
+  console.log("");
 
   process.exit(0);
+}
 
-};
-
-// Run the tests
-_app.runTests();
