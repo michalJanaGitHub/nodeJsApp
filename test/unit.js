@@ -10,6 +10,7 @@ const exampleDebuggingProblem = require('./../lib/exampleDebuggingProblem.js');
 const assert = require('assert');
 const _data = require('./../lib/data.js');
 const to = require('./../lib/to');
+const handlers = require('./../lib/handlers');
 
 // Holder for Tests
 let unit = {};
@@ -80,6 +81,32 @@ unit['logs.list should callback a false error and an array of log names'] =
       } catch (e) { done(e); }
     });
   };
+
+unit['handlers.users.post basic'] =
+function (done) {
+  let Payload = {
+    payload: {
+      firstName: "john",
+      lastName: "snow",
+      phone: "0987654321",
+      password: "password",
+      tosAgreement: true
+    }
+  };
+
+  handlers._users.post(Payload, async(statusCode, data) => {
+      try {
+        let err, userData;
+    [err, userData] = await to(_data.readA('users', Payload.payload.phone));
+    [err] = await to(_data.deleteA('users', Payload.payload.phone));
+    assert.equal(statusCode, 200);
+    assert.equal(err, null);
+    assert.equal(userData.phone, Payload.payload.phone);
+    done();
+  } catch (e) { done(e); }
+  
+  });
+};
 
 // // Logs.truncate should not throw if the logId does not exist
 // unit['logs.truncate should not throw if the logId does not exist, should callback an error instead'] = function(done){

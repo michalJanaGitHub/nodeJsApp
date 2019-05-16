@@ -86,8 +86,9 @@ function produceTestReport(testsCount, successfulTests, errorsArr) {
   console.log("--------BEGIN TEST SUMMARY---------");
   console.log("");
   console.log("Total Tests: ", testsCount);
-  console.log("Pass: ", successfulTests);
-  console.log("Fail: ", errorsArr.length);
+  console.log('\x1b[32m%s\x1b[0m', `Pass: ${successfulTests}`);
+  if (errorsArr.length === 0) console.log(`Fail: ${errorsArr.length}`);
+  else console.log('\x1b[31m%s\x1b[0m', `Fail: ${errorsArr.length}`);
   console.log("");
   console.log("----------END TEST REPORT----------");
   console.log("");

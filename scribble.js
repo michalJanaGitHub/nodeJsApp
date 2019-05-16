@@ -8,12 +8,16 @@ $env:NODE_ENV="production"; $env:NODE_DEBUG="workers"; nodemon scribble.js
 // Dependencies
 const _data = require('./lib/data');
 const fs = require('fs');
+const fsp = require('./lib/fsP');
 const config = require('./lib/config');
 const zlib = require('zlib');
 const util = require('util');
 const debug = util.debuglog('workers');
 const to = require('./lib/to.js');
 const http = require('http');
+const path = require('path');
+const assert = require('assert');
+const handlers = require('./lib/handlers');
 
 // Application logic for the test runner
 _app = {};
@@ -25,23 +29,56 @@ _app.tests = {};
 _app.tests.unit = require('./test/unit');
 _app.tests.api = require('./test/api');
 
-console.log('\x1b[33m%s\x1b[0m', 'start scribble');
+
 // console.log('env: ', process.env.NODE_ENV);
 // console.log('debug: ', process.env.NODE_DEBUG);
+console.log('\x1b[33m%s\x1b[0m', '');
+console.log('\x1b[33m%s\x1b[0m', 'start scribble');
 
-// Count all the tests
-_app.countTests = function () {
-  let noOfTestsRun = 0;
-  Object.keys(_app.tests).map(subTest => {
-    Object.keys(_app.tests[subTest]).map(test => {
-      noOfTestsRun++;
-    }); 
-  });
-  return noOfTestsRun;
-};
+process.on('beforeExit', () => {
+  console.log('\x1b[33m%s\x1b[0m', 'end scribble');
+  console.log('\x1b[33m%s\x1b[0m', '');
+  process.exit();
+});
+
+async function runTest () {
+  let Payload = {
+    payload: {
+      firstName: "john",
+      lastName: "snow",
+      phone: "0987654321",
+      password: "password",
+      tosAgreement: true
+    }
+  };
+
+  handlers._users.post(Payload, async(statusCode, data) => {
+    let err, userData;
+    [err, userData] = await to(_data.readA('users', Payload.payload.phone));
+    [err] = await to(_data.deleteA('users', Payload.payload.phone));
+    assert.equal(err, null);
+    assert.equal(userData.phone, Payload.payload.phone);
+  });  
+}
+
+(async () => {
+  let err;
+  [err] = await to (runTest());
+  
+})();
 
 
-console.log(_app.countTests());
+
+
+
+// appendFile('tesaaasdfdft0asdf0asf0', 'xx', '/')
+//   .then(() => console.log('ok'))
+//   .catch((err) => {
+//     console.log(err);
+//   });
+
+
+
 
 
 // let helpers = {};
