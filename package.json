@@ -8,7 +8,9 @@
     "test": "test"
   },
   "scripts": {
-    "test": "node test/index.js"
+    "start": "node --use-strict index.js",
+    "nm": "nodemon --use-strict index.js",
+    "test": "node --use-strict test/index.js"
   },
   "repository": {
     "type": "git",

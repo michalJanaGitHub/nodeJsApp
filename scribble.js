@@ -71,7 +71,7 @@ async function runTest () {
 
 
 
-// appendFile('tesaaasdfdft0asdf0asf0', 'xx', '/')
+// appendFile('tes', 'xx', '/')
 //   .then(() => console.log('ok'))
 //   .catch((err) => {
 //     console.log(err);

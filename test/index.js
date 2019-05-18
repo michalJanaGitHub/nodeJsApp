@@ -7,7 +7,7 @@
 process.env.NODE_ENV = 'testing';
 
 // Application logic for the test runner
-_app = {};
+let _app = {};
 
 // Holder of all tests
 _app.tests = {};
@@ -15,7 +15,7 @@ _app.tests = {};
 // Dependencies
 _app.tests.unit = require('./unit');
 _app.tests.api = require('./api');
-to = require('./../lib/to');
+let to = require('./../lib/to');
 
 
 // Run the tests

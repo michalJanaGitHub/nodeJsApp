@@ -82,9 +82,13 @@ unit['logs.list should callback a false error and an array of log names'] =
     });
   };
 
-unit['handlers.users.post basic'] =
-function (done) {
-  let Payload = {
+
+
+// USERS
+let usersTestData = {};
+
+usersTestData = {
+  user: {
     payload: {
       firstName: "john",
       lastName: "snow",
@@ -92,21 +96,58 @@ function (done) {
       password: "password",
       tosAgreement: true
     }
-  };
+  },
+  userExisting: {
+    payload: {
+      firstName: "danny",
+      lastName: "smith",
+      phone: "1111111111",
+      password: "password",
+      tosAgreement: true
+    }
+  }
+};
 
-  handlers._users.post(Payload, async(statusCode, data) => {
-      try {
-        let err, userData;
-    [err, userData] = await to(_data.readA('users', Payload.payload.phone));
-    [err] = await to(_data.deleteA('users', Payload.payload.phone));
+
+unit['handlers.users.post basic'] =
+function (done) {
+  let pLoad = usersTestData.user;
+
+  handlers._users.post(pLoad, async(statusCode, data) => {
+  try {
+    let err, userData;
+    [err, userData] = await to(_data.readA('users', pLoad.payload.phone));
+    [err] = await to(_data.deleteA('users', pLoad.payload.phone));
     assert.equal(statusCode, 200);
     assert.equal(err, null);
-    assert.equal(userData.phone, Payload.payload.phone);
+    assert.equal(userData.phone, pLoad.payload.phone);
     done();
   } catch (e) { done(e); }
   
   });
 };
+
+
+unit['handlers.tokens.post basic'] =
+function (done) {
+  let pLoad = usersTestData.userExisting;
+
+  handlers._tokens.post(pLoad, (statusCode, tokenObject) => {
+    try {
+      handlers._tokens.verifyToken(tokenObject.id, tokenObject.phone, (tokenOK) => {
+        assert.equal(statusCode, 200);
+        assert.equal(tokenObject.phone, pLoad.payload.phone);
+        assert.equal(tokenOK, true);
+      });
+      
+    done();
+  } catch (e) { done(e); }
+  
+  });
+};
+
+
+
 
 // // Logs.truncate should not throw if the logId does not exist
 // unit['logs.truncate should not throw if the logId does not exist, should callback an error instead'] = function(done){
