@@ -97,7 +97,7 @@ usersTestData = {
       tosAgreement: true
     }
   },
-  userExisting: {
+  userExisting: {    
     payload: {
       firstName: "danny",
       lastName: "smith",
@@ -128,24 +128,80 @@ function (done) {
 };
 
 
-unit['handlers.tokens.post basic'] =
-function (done) {
-  let pLoad = usersTestData.userExisting;
+// unit['handlers.tokens.post basic'] =
+// function (done) {
+//   let pLoad = usersTestData.userExisting;
 
-  handlers._tokens.post(pLoad, (statusCode, tokenObject) => {
-    try {
-      handlers._tokens.verifyToken(tokenObject.id, tokenObject.phone, (tokenOK) => {
-        assert.equal(statusCode, 200);
-        assert.equal(tokenObject.phone, pLoad.payload.phone);
-        assert.equal(tokenOK, true);
-      });
-      
+//   handlers._tokens.post(pLoad, (statusCode, tokenObject) => {
+//     try {
+//       handlers._tokens.verifyToken(tokenObject.id, tokenObject.phone, (tokenOK) => {
+//         assert.equal(statusCode, 200);
+//         assert.equal(tokenObject.phone, pLoad.payload.phone);
+//         assert.equal(tokenOK, true);
+//       });
+
+//     done();
+//   } catch (e) { done(e); }
+
+//   });
+// };
+
+unit['handlers.tokens CRUD basic'] =
+async function (done) {
+  let pLoad = usersTestData.userExisting;
+  try {
+    let err, resO, tokenOK;
+
+    pLoad.method = 'post';
+
+    [err, resO] = await to (handlers.tokensA(pLoad));
+    assert.equal(resO.resCode, 200);
+    assert.equal(resO.payload.phone, pLoad.payload.phone);
+    
+    [err, tokenOK] = await to(handlers._tokens.verifyTokenA(resO.payload.id, resO.payload.phone));
+    assert.equal(err, null);
+    assert.equal(tokenOK, true);
+
+    let data = {
+      method: 'get',
+      queryStringObject : {
+        id: resO.payload.id,
+        extend: true
+      }
+    };
+
+    [err, resO] = await to(handlers.tokensA(data));
+    assert.equal(err, null);
+    assert.equal(resO.resCode, 200);
+    assert.equal(resO.payload.phone, pLoad.payload.phone);
+
+    let dataPut = {
+      method: 'put',
+      "payload": {
+        "id": resO.payload.id,
+        "extend": true
+      }
+    };
+
+    [err, resO] = await to(handlers.tokensA(dataPut));
+    assert.equal(err, null);
+    assert.equal(resO.resCode, 200);
+
+    data.method = 'delete';
+
+    [err, resO] = await to(handlers.tokensA(data));
+    assert.equal(err, null);   
+    assert.equal(resO.resCode, 200);
+
+    data.method = 'get';
+
+    [err, resO] = await to(handlers.tokensA(data));
+    assert.equal(err, null);
+    assert.equal(resO.resCode, 400);
+
     done();
   } catch (e) { done(e); }
-  
-  });
 };
-
 
 
 
