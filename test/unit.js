@@ -89,6 +89,12 @@ let usersTestData = {};
 
 usersTestData = {
   user: {
+    queryStringObject: {
+      phone: "0987654321"
+    },
+    headers: {
+      token: ''
+    },
     payload: {
       firstName: "john",
       lastName: "snow",
@@ -109,51 +115,58 @@ usersTestData = {
 };
 
 
-unit['handlers.users.post basic'] =
-function (done) {
+unit['handlers.users CRUD basic'] =
+async function (done) {
   let pLoad = usersTestData.user;
-
-  handlers._users.post(pLoad, async(statusCode, data) => {
   try {
-    let err, userData;
-    [err, userData] = await to(_data.readA('users', pLoad.payload.phone));
-    [err] = await to(_data.deleteA('users', pLoad.payload.phone));
-    assert.equal(statusCode, 200);
+
+    // users.post
+    pLoad.method = 'post';
+
+    let err, userData, tokenData;
+    [err, userData] = await to(handlers.usersA(pLoad));
     assert.equal(err, null);
-    assert.equal(userData.phone, pLoad.payload.phone);
+    // assert.equal(userData.resCode, 200);
+
+    // tokens.post
+    pLoad.method = 'post';
+    [err, tokenData] = await to (handlers.tokensA(pLoad));
+    assert.equal(tokenData.resCode, 200);
+    assert.equal(tokenData.payload.phone, pLoad.payload.phone);
+
+    pLoad.headers.token = tokenData.payload.id;
+
+    // users.put
+    pLoad.method = 'put';
+    pLoad.payload.firstName = 'honza';
+    [err] = await to (handlers.usersA(pLoad));
+    assert.equal(userData.resCode, 200);
+
+    // users.get
+    pLoad.method = 'get';
+    [err, userData] = await to (handlers.usersA(pLoad));
+    assert.equal(userData.resCode, 200);
+    assert.equal(userData.payload.phone, pLoad.payload.phone);
+    assert.equal(userData.payload.firstName, 'honza');
+    
+    // users.delete
+    pLoad.method = 'delete';
+    [err, userData] = await to(handlers.usersA(pLoad));
+    assert.equal(err, null);
+    assert.equal(userData.resCode, 200);
+
     done();
   } catch (e) { done(e); }
-  
-  });
 };
-
-
-// unit['handlers.tokens.post basic'] =
-// function (done) {
-//   let pLoad = usersTestData.userExisting;
-
-//   handlers._tokens.post(pLoad, (statusCode, tokenObject) => {
-//     try {
-//       handlers._tokens.verifyToken(tokenObject.id, tokenObject.phone, (tokenOK) => {
-//         assert.equal(statusCode, 200);
-//         assert.equal(tokenObject.phone, pLoad.payload.phone);
-//         assert.equal(tokenOK, true);
-//       });
-
-//     done();
-//   } catch (e) { done(e); }
-
-//   });
-// };
 
 unit['handlers.tokens CRUD basic'] =
 async function (done) {
   let pLoad = usersTestData.userExisting;
   try {
-    let err, resO, tokenOK;
+    let err, resO, tokenOK, tokenData;
 
     pLoad.method = 'post';
-
+    // tokens.post
     [err, resO] = await to (handlers.tokensA(pLoad));
     assert.equal(resO.resCode, 200);
     assert.equal(resO.payload.phone, pLoad.payload.phone);
@@ -170,6 +183,7 @@ async function (done) {
       }
     };
 
+    // tokens.get
     [err, resO] = await to(handlers.tokensA(data));
     assert.equal(err, null);
     assert.equal(resO.resCode, 200);
@@ -183,18 +197,19 @@ async function (done) {
       }
     };
 
+    // tokens.put
     [err, resO] = await to(handlers.tokensA(dataPut));
     assert.equal(err, null);
     assert.equal(resO.resCode, 200);
 
+    // tokens.delete
     data.method = 'delete';
-
     [err, resO] = await to(handlers.tokensA(data));
     assert.equal(err, null);   
     assert.equal(resO.resCode, 200);
 
+    // tokens.get
     data.method = 'get';
-
     [err, resO] = await to(handlers.tokensA(data));
     assert.equal(err, null);
     assert.equal(resO.resCode, 400);

@@ -10,6 +10,7 @@
   "scripts": {
     "start": "node --use-strict index.js",
     "nm": "nodemon --use-strict index.js",
+    "scr": "nodemon --use-strict scribble.js",
     "test": "node --use-strict test/index.js"
   },
   "repository": {

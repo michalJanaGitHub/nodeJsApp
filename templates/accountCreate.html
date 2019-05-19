@@ -5,26 +5,30 @@
   <form id="accountCreate" action="/api/users" method="POST">
     <div class="formError"></div>
     <div class="inputWrapper">
-      <div class="inputLabel">First Name</div>
+      <label for="login" class="inputLabel">E-mail</label>
+      <input type="text" name="login" placeholder="john.smith@domain.com" />
+    </div>
+    <div class="inputWrapper">
+      <label for="firstName" class="inputLabel">First Name</label>
       <input type="text" name="firstName" placeholder="John" />
     </div>
     <div class="inputWrapper">
-      <div class="inputLabel">Last Name</div>
+      <label for="lastName" class="inputLabel">Last Name</label>
       <input type="text" name="lastName" placeholder="Smith" />
     </div>
     <div class="inputWrapper">
-      <div class="inputLabel">Phone Number</div>
+      <label for="phone" class="inputLabel">Phone Number</label>
       <input type="text" name="phone" placeholder="(415) 123-4567" />
     </div>
     <div class="inputWrapper">
-      <div class="inputLabel">Choose a Password</div>
+      <label for="password" class="inputLabel">Choose a Password</label>
       <input type="password" name="password" placeholder="Make it a good one!" />
     </div>
     <div class="inputWrapper">
-      <div class="inputLabel">Do you agree to the terms and conditions?</div>
+      <label for="tosAgreement" class="inputLabel">Do you agree to the terms and conditions?</label>
       <input type="checkbox" name="tosAgreement" value="agree">
     </div>
-    <div class="inputWrapper ctaWrapper">
+    <label for="firstName" class="inputWrapper ctaWrapper">
       <button type="submit" class="cta green">Get Started</button>
     </div>
   </form>

@@ -19,17 +19,6 @@ const path = require('path');
 const assert = require('assert');
 const handlers = require('./lib/handlers');
 
-// Application logic for the test runner
-_app = {};
-
-// Holder of all tests
-_app.tests = {};
-
-// Dependencies
-_app.tests.unit = require('./test/unit');
-_app.tests.api = require('./test/api');
-
-
 // console.log('env: ', process.env.NODE_ENV);
 // console.log('debug: ', process.env.NODE_DEBUG);
 console.log('\x1b[33m%s\x1b[0m', '');
@@ -41,31 +30,9 @@ process.on('beforeExit', () => {
   process.exit();
 });
 
-async function runTest () {
-  let Payload = {
-    payload: {
-      firstName: "john",
-      lastName: "snow",
-      phone: "0987654321",
-      password: "password",
-      tosAgreement: true
-    }
-  };
-
-  handlers._users.post(Payload, async(statusCode, data) => {
-    let err, userData;
-    [err, userData] = await to(_data.readA('users', Payload.payload.phone));
-    [err] = await to(_data.deleteA('users', Payload.payload.phone));
-    assert.equal(err, null);
-    assert.equal(userData.phone, Payload.payload.phone);
-  });  
-}
-
-(async () => {
-  let err;
-  [err] = await to (runTest());
-  
-})();
+// console.log('Module: ', __module);
+console.log('Function: ', __function, );
+console.log('Line: ', __line);
 
 
 
