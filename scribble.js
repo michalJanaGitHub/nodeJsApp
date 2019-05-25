@@ -18,6 +18,7 @@ const http = require('http');
 const path = require('path');
 const assert = require('assert');
 const handlers = require('./lib/handlers');
+const validate = require('./lib/validator');
 
 // console.log('env: ', process.env.NODE_ENV);
 // console.log('debug: ', process.env.NODE_DEBUG);
@@ -30,9 +31,11 @@ process.on('beforeExit', () => {
   process.exit();
 });
 
-// console.log('Module: ', __module);
-console.log('Function: ', __function, );
-console.log('Line: ', __line);
+
+let email = 'email@email.cz';
+let pattern = new RegExp(/^[a-z0-9](\.?[a-z0-9_-]){0,}@[a-z0-9-]+\.([a-z]{1,6}\.)?[a-z]{2,6}$/g);
+email = typeof (email) === 'string' && pattern.test(email.trim()) ? email.trim() : false;
+console.log(email);
 
 
 

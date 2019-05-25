@@ -96,6 +96,7 @@ usersTestData = {
       token: ''
     },
     payload: {
+      login: "john@snow.cz",
       firstName: "john",
       lastName: "snow",
       phone: "0987654321",
@@ -105,6 +106,7 @@ usersTestData = {
   },
   userExisting: {    
     payload: {
+      login : "danny@smith.cz",
       firstName: "danny",
       lastName: "smith",
       phone: "1111111111",
@@ -126,7 +128,7 @@ async function (done) {
     let err, userData, tokenData;
     [err, userData] = await to(handlers.usersA(pLoad));
     assert.equal(err, null);
-    // assert.equal(userData.resCode, 200);
+    assert.equal(userData.resCode, 200);
 
     // tokens.post
     pLoad.method = 'post';
@@ -139,7 +141,7 @@ async function (done) {
     // users.put
     pLoad.method = 'put';
     pLoad.payload.firstName = 'honza';
-    [err] = await to (handlers.usersA(pLoad));
+    [err, userData] = await to (handlers.usersA(pLoad));
     assert.equal(userData.resCode, 200);
 
     // users.get
@@ -167,7 +169,7 @@ async function (done) {
 
     pLoad.method = 'post';
     // tokens.post
-    [err, resO] = await to (handlers.tokensA(pLoad));
+    [err, resO] = await to(handlers.tokensA(pLoad));
     assert.equal(resO.resCode, 200);
     assert.equal(resO.payload.phone, pLoad.payload.phone);
     

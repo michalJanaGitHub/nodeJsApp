@@ -11,7 +11,8 @@
     "start": "node --use-strict index.js",
     "nm": "nodemon --use-strict index.js",
     "scr": "nodemon --use-strict scribble.js",
-    "test": "node --use-strict test/index.js"
+    "test": "node --use-strict test/index.js",
+    "test1": "node --use-strict test/index.1.js"
   },
   "repository": {
     "type": "git",
