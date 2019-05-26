@@ -4,6 +4,7 @@
  */
 
 // Dependencies
+const config = require('./../lib/config');
 const helpers = require('./../lib/helpers.js');
 const logs = require('./../lib/logs.js');
 const exampleDebuggingProblem = require('./../lib/exampleDebuggingProblem.js');
@@ -121,11 +122,17 @@ unit['handlers.users CRUD basic'] =
 async function (done) {
   let pLoad = usersTestData.user;
   try {
+    let err, userData, tokenData;
+
+    
+    // delete user in case it is left from previous unsuccessful test
+    pLoad.method = 'delete';
+    [err, userData] = await to(handlers.usersA(pLoad));
+
 
     // users.post
     pLoad.method = 'post';
 
-    let err, userData, tokenData;
     [err, userData] = await to(handlers.usersA(pLoad));
     assert.equal(err, null);
     assert.equal(userData.resCode, 200);

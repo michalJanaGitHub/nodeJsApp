@@ -9,7 +9,7 @@
 let testName = 'handlers.tokens CRUD basic';
 
 // Override the NODE_ENV variable
-process.env.NODE_ENV = 'testing';
+// process.env.NODE_ENV = 'testing';
 
 // Dependencies
 let _unit = require('./unit');
