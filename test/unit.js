@@ -127,7 +127,7 @@ async function (done) {
     
     // delete user in case it is left from previous unsuccessful test
     pLoad.method = 'delete';
-    [err, userData] = await to(handlers.usersA(pLoad));
+    [err, userData] = await to(handlers._users.deleteFinal(pLoad.queryStringObject.phone), false);
 
 
     // users.post

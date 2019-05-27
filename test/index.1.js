@@ -6,7 +6,7 @@
 
  
 
-let testName = 'handlers.tokens CRUD basic';
+let testName = 'handlers.users CRUD basic';
 
 // Override the NODE_ENV variable
 // process.env.NODE_ENV = 'testing';
