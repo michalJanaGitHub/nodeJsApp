@@ -10,6 +10,7 @@ const logs = require('./../lib/logs.js');
 const exampleDebuggingProblem = require('./../lib/exampleDebuggingProblem.js');
 const assert = require('assert');
 const _data = require('./../lib/data.js');
+const _tokens = require('./../lib/data.js');
 const to = require('./../lib/to');
 const handlers = require('./../lib/handlers');
 
@@ -91,13 +92,13 @@ let usersTestData = {};
 usersTestData = {
   user: {
     queryStringObject: {
-      phone: "0987654321"
+      email: "john@snow.cz"
     },
     headers: {
       token: ''
     },
     payload: {
-      login: "john@snow.cz",
+      email: "john@snow.cz",
       firstName: "john",
       lastName: "snow",
       phone: "0987654321",
@@ -107,7 +108,7 @@ usersTestData = {
   },
   userExisting: {    
     payload: {
-      login : "danny@smith.cz",
+      email : "danny@smith.cz",
       firstName: "danny",
       lastName: "smith",
       phone: "1111111111",
@@ -122,13 +123,11 @@ unit['handlers.users CRUD basic'] =
 async function (done) {
   let pLoad = usersTestData.user;
   try {
-    let err, userData, tokenData;
+    let err, userData, tokenData, res;
 
-    
     // delete user in case it is left from previous unsuccessful test
     pLoad.method = 'delete';
-    [err, userData] = await to(handlers._users.deleteFinal(pLoad.queryStringObject.phone), false);
-
+    [err, userData] = await to(handlers._users.deleteFinal(pLoad.queryStringObject.email), false);
 
     // users.post
     pLoad.method = 'post';
@@ -141,7 +140,7 @@ async function (done) {
     pLoad.method = 'post';
     [err, tokenData] = await to (handlers.tokensA(pLoad));
     assert.equal(tokenData.resCode, 200);
-    assert.equal(tokenData.payload.phone, pLoad.payload.phone);
+    assert.equal(tokenData.payload.email, pLoad.payload.email);
 
     pLoad.headers.token = tokenData.payload.id;
 
@@ -155,7 +154,7 @@ async function (done) {
     pLoad.method = 'get';
     [err, userData] = await to (handlers.usersA(pLoad));
     assert.equal(userData.resCode, 200);
-    assert.equal(userData.payload.phone, pLoad.payload.phone);
+    assert.equal(userData.payload.email, pLoad.payload.email);
     assert.equal(userData.payload.firstName, 'honza');
     
     // users.delete
@@ -164,8 +163,14 @@ async function (done) {
     assert.equal(err, null);
     assert.equal(userData.resCode, 200);
 
+    //throwing out token
+    [err, res] = await to(handlers._tokens.deleteFinal(tokenData.payload.id));
+    assert.equal(err, null);
+    assert.equal(res.resCode, 200);
     done();
   } catch (e) { done(e); }
+
+
 };
 
 unit['handlers.tokens CRUD basic'] =
@@ -178,9 +183,9 @@ async function (done) {
     // tokens.post
     [err, resO] = await to(handlers.tokensA(pLoad));
     assert.equal(resO.resCode, 200);
-    assert.equal(resO.payload.phone, pLoad.payload.phone);
+    assert.equal(resO.payload.email, pLoad.payload.email);
     
-    [err, tokenOK] = await to(handlers._tokens.verifyTokenA(resO.payload.id, resO.payload.phone));
+    [err, tokenOK] = await to(handlers._tokens.verifyTokenA(resO.payload.id, resO.payload.email));
     assert.equal(err, null);
     assert.equal(tokenOK, true);
 
@@ -196,7 +201,7 @@ async function (done) {
     [err, resO] = await to(handlers.tokensA(data));
     assert.equal(err, null);
     assert.equal(resO.resCode, 200);
-    assert.equal(resO.payload.phone, pLoad.payload.phone);
+    assert.equal(resO.payload.email, pLoad.payload.email);
 
     let dataPut = {
       method: 'put',

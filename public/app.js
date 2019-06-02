@@ -11,8 +11,8 @@ app.config = {
   'sessionToken' : false
 };
 
-// AJAX Client (for RESTful API)
-app.client = {}
+// AJAX Client (for REST-ful API)
+app.client = {};
 
 // Interface for making API calls
 app.client.request = function(headers,path,method,queryStringObject,payload,callback){
@@ -31,7 +31,7 @@ app.client.request = function(headers,path,method,queryStringObject,payload,call
   for(var queryKey in queryStringObject){
      if(queryStringObject.hasOwnProperty(queryKey)){
        counter++;
-       // If at least one query string parameter has already been added, preprend new ones with an ampersand
+       // If at least one query string parameter has already been added, prepend new ones with an ampersand
        if(counter > 1){
          requestUrl+='&';
        }
@@ -58,23 +58,23 @@ app.client.request = function(headers,path,method,queryStringObject,payload,call
   }
 
   // When the request comes back, handle the response
-  xhr.onreadystatechange = function() {
-      if(xhr.readyState == XMLHttpRequest.DONE) {
-        var statusCode = xhr.status;
-        var responseReturned = xhr.responseText;
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState == XMLHttpRequest.DONE) {
+      var statusCode = xhr.status;
+      var responseReturned = xhr.responseText;
 
-        // Callback if requested
-        if(callback){
-          try{
-            var parsedResponse = JSON.parse(responseReturned);
-            callback(statusCode,parsedResponse);
-          } catch(e){
-            callback(statusCode,false);
-          }
-
+      // Callback if requested
+      if (callback) {
+        try {
+          var parsedResponse = JSON.parse(responseReturned);
+          callback(statusCode, parsedResponse);
+        } catch (e) {
+          callback(statusCode, false);
         }
+
       }
-  }
+    }
+  };
 
   // Send the payload as JSON
   var payloadString = JSON.stringify(payload);
@@ -156,7 +156,7 @@ app.bindForms = function(){
             if(nameOfElement == '_method'){
               method = valueOfElement;
             } else {
-              // Create an payload field named "method" if the elements name is actually httpmethod
+              // Create an payload field named "method" if the elements name is actually http method
               if(nameOfElement == 'httpmethod'){
                 nameOfElement = 'method';
               }
@@ -164,7 +164,7 @@ app.bindForms = function(){
               if(nameOfElement == 'uid'){
                 nameOfElement = 'id';
               }
-              // If the element has the class "multiselect" add its value(s) as array elements
+              // If the element has the class "multi-select" add its value(s) as array elements
               if(classOfElement.indexOf('multiselect') > -1){
                 if(elementIsChecked){
                   payload[nameOfElement] = typeof(payload[nameOfElement]) == 'object' && payload[nameOfElement] instanceof Array ? payload[nameOfElement] : [];
@@ -194,7 +194,7 @@ app.bindForms = function(){
             } else {
 
               // Try to get the error from the api, or set a default error message
-              var error = typeof(responsePayload.Error) == 'string' ? responsePayload.Error : 'An error has occured, please try again';
+              var error = typeof(responsePayload.Error) == 'string' ? responsePayload.Error : 'An error has occurred, please try again';
 
               // Set the formError field with the error text
               document.querySelector("#"+formId+" .formError").innerHTML = error;
@@ -217,10 +217,10 @@ app.bindForms = function(){
 app.formResponseProcessor = function(formId,requestPayload,responsePayload){
   var functionToCall = false;
   // If account creation was successful, try to immediately log the user in
-  if(formId == 'accountCreate'){
-    // Take the phone and password, and use it to log the user in
+  if(formId === 'accountCreate'){
+    // Take email and password, and use it to log the user in
     var newPayload = {
-      'phone' : requestPayload.phone,
+      'email' : requestPayload.email,
       'password' : requestPayload.password
     };
 
@@ -229,7 +229,7 @@ app.formResponseProcessor = function(formId,requestPayload,responsePayload){
       if(newStatusCode !== 200){
 
         // Set the formError field with the error text
-        document.querySelector("#"+formId+" .formError").innerHTML = 'Sorry, an error has occured. Please try again.';
+        document.querySelector("#"+formId+" .formError").innerHTML = 'Sorry, an error has occurred. Please try again.';
 
         // Show (unhide) the form error field on the form
         document.querySelector("#"+formId+" .formError").style.display = 'block';
@@ -241,7 +241,7 @@ app.formResponseProcessor = function(formId,requestPayload,responsePayload){
       }
     });
   }
-  // If login was successful, set the token in localstorage and redirect the user
+  // If login was successful, set the token in local storage and redirect the user
   if(formId == 'sessionCreate'){
     app.setSessionToken(responsePayload);
     window.location = '/checks/all';
@@ -271,7 +271,7 @@ app.formResponseProcessor = function(formId,requestPayload,responsePayload){
 
 };
 
-// Get the session token from localstorage and set it in the app.config object
+// Get the session token from local storage and set it in the app.config object
 app.getSessionToken = function(){
   var tokenString = localStorage.getItem('token');
   if(typeof(tokenString) == 'string'){
@@ -300,7 +300,7 @@ app.setLoggedInClass = function(add){
   }
 };
 
-// Set the session token in the app.config object as well as localstorage
+// Set the session token in the app.config object as well as local storage
 app.setSessionToken = function(token){
   app.config.sessionToken = token;
   var tokenString = JSON.stringify(token);
@@ -371,24 +371,24 @@ app.loadDataOnPage = function(){
 
 // Load the account edit page specifically
 app.loadAccountEditPage = function(){
-  // Get the phone number from the current token, or log the user out if none is there
-  var phone = typeof(app.config.sessionToken.phone) == 'string' ? app.config.sessionToken.phone : false;
-  if(phone){
+  // Get the email from the current token, or log the user out if none is there
+  var email = typeof(app.config.sessionToken.email) == 'string' ? app.config.sessionToken.email : false;
+  if(email){
     // Fetch the user data
     var queryStringObject = {
-      'phone' : phone
+      email
     };
     app.client.request(undefined,'api/users','GET',queryStringObject,undefined,function(statusCode,responsePayload){
       if(statusCode == 200){
         // Put the data into the forms as values where needed
         document.querySelector("#accountEdit1 .firstNameInput").value = responsePayload.firstName;
         document.querySelector("#accountEdit1 .lastNameInput").value = responsePayload.lastName;
-        document.querySelector("#accountEdit1 .displayPhoneInput").value = responsePayload.phone;
+        document.querySelector("#accountEdit1 .displayEmailInput").value = responsePayload.email;
 
-        // Put the hidden phone field into both forms
-        var hiddenPhoneInputs = document.querySelectorAll("input.hiddenPhoneNumberInput");
-        for(var i = 0; i < hiddenPhoneInputs.length; i++){
-            hiddenPhoneInputs[i].value = responsePayload.phone;
+        // Put the hidden email field into both forms
+        var hiddenEmailInputs = document.querySelectorAll("input.hiddenEmailNumberInput");
+        for(var i = 0; i < hiddenEmailInputs.length; i++){
+          hiddenEmailInputs[i].value = responsePayload.email;
         }
 
       } else {
@@ -403,14 +403,14 @@ app.loadAccountEditPage = function(){
 
 // Load the dashboard page specifically
 app.loadChecksListPage = function(){
-  // Get the phone number from the current token, or log the user out if none is there
-  var phone = typeof(app.config.sessionToken.phone) == 'string' ? app.config.sessionToken.phone : false;
-  if(phone){
+  // Get the email from the current token, or log the user out if none is there
+  var email = typeof(app.config.sessionToken.email) == 'string' ? app.config.sessionToken.email : false;
+  if(email){
     // Fetch the user data
     var queryStringObject = {
-      'phone' : phone
+      email
     };
-    app.client.request(undefined,'api/users','GET',queryStringObject,undefined,function(statusCode,responsePayload){
+    app.client.request(undefined,'api/users','GET', queryStringObject, undefined, function(statusCode, responsePayload){
       if(statusCode == 200){
 
         // Determine how many checks the user has
@@ -423,7 +423,7 @@ app.loadChecksListPage = function(){
             var newQueryStringObject = {
               'id' : checkId
             };
-            app.client.request(undefined,'api/checks','GET',newQueryStringObject,undefined,function(statusCode,responsePayload){
+            app.client.request(undefined, 'api/checks', 'GET', newQueryStringObject, undefined, function(statusCode, responsePayload){
               if(statusCode == 200){
                 var checkData = responsePayload;
                 // Make the check data into a table row
@@ -482,10 +482,10 @@ app.loadChecksEditPage = function(){
     };
     app.client.request(undefined,'api/checks','GET',queryStringObject,undefined,function(statusCode,responsePayload){
       if(statusCode == 200){
-
+        let i = 1;
         // Put the hidden id field into both forms
         var hiddenIdInputs = document.querySelectorAll("input.hiddenIdInput");
-        for(var i = 0; i < hiddenIdInputs.length; i++){
+        for(i = 0; i < hiddenIdInputs.length; i++){
             hiddenIdInputs[i].value = responsePayload.id;
         }
 
@@ -497,7 +497,7 @@ app.loadChecksEditPage = function(){
         document.querySelector("#checksEdit1 .methodInput").value = responsePayload.method;
         document.querySelector("#checksEdit1 .timeoutInput").value = responsePayload.timeoutSeconds;
         var successCodeCheckboxes = document.querySelectorAll("#checksEdit1 input.successCodesInput");
-        for(var i = 0; i < successCodeCheckboxes.length; i++){
+        for(i = 0; i < successCodeCheckboxes.length; i++){
           if(responsePayload.successCodes.indexOf(parseInt(successCodeCheckboxes[i].value)) > -1){
             successCodeCheckboxes[i].checked = true;
           }
@@ -532,7 +532,7 @@ app.init = function(){
   // Bind logout logout button
   app.bindLogoutButton();
 
-  // Get the token from localstorage
+  // Get the token from local storage
   app.getSessionToken();
 
   // Renew token

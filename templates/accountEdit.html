@@ -9,16 +9,11 @@
     <input type="hidden" name="_method" value="PUT"/>
     <div class="formError"></div>
     <div class="formSuccess">Your Changes Have Been Saved</div>
-    <input class="hiddenPhoneNumberInput"  type="hidden" name="phone" />
+    <input class="hiddenEmailNumberInput"  type="hidden" name="email" />
 
-    
     <div class="inputWrapper">
-      <label for="login" class="inputLabel">E-mail</label>
-      <input type="text" name="login" placeholder="john.smith@domain.com" />
-    </div>
-    <div class="inputWrapper">
-      <div class="inputLabel">Phone Number</div>
-      <input class="disabled displayPhoneInput" type="text" name="displayPhone" disabled />
+      <div class="inputLabel">Email</div>
+      <input class="disabled displayEmailInput" type="text" name="displayEmail" disabled />
     </div>
     <div class="inputWrapper">
       <div class="inputLabel">First Name</div>
@@ -41,7 +36,7 @@
     <input type="hidden" name="_method" value="PUT"/>
     <div class="formError"></div>
     <div class="formSuccess">Your New Password Has Been Saved</div>
-    <input class="hiddenPhoneNumberInput" type="hidden" name="phone" />
+    <input class="hiddenEmailNumberInput" type="hidden" name="email" />
     <div class="inputWrapper">
       <div class="inputLabel">Choose a New Password</div>
       <input type="password" name="password" placeholder="Make it a good one!" />
@@ -59,8 +54,8 @@
   <form id="accountEdit3" action="/api/users" method="DELETE">
     <input type="hidden" name="_method" value="DELETE"/>
     <div class="formError"></div>
-    <div class="warning">Warning: This action cannot be undone. Dont click this button on accident!</div>
-    <input class="hiddenPhoneNumberInput" type="hidden" name="phone" />
+    <div class="warning">Warning: This action cannot be undone. Don't click this button on accident!</div>
+    <input class="hiddenEmailNumberInput" type="hidden" name="email" />
     <div class="inputWrapper ctaWrapper">
       <button type="submit" class="cta red">Delete Account</button>
     </div>
