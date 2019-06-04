@@ -8,19 +8,37 @@
       "type": "node",
       "request": "attach",
       "name": "Attach by Process ID",
-      "processId": "${command:PickProcess}"
+      "processId": "${command:PickProcess}",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
-      "program": "${workspaceFolder}\\index.js"
+      "program": "${workspaceFolder}\\index.js",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Launch test1",
-      "program": "${workspaceFolder}\\test\\index.1.js"
+      "program": "${workspaceFolder}\\test\\index.1.js",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch scribble",
+      "program": "${workspaceFolder}\\scribble.js",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
     }
   ]
 }

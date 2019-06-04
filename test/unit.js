@@ -20,10 +20,10 @@ let unit = {};
 unit['data.Async CRUD'] = async function (done) {
   let err, data;
 
-  if (!err) [err]       = await to(_data.createA('test', 'uniAsyncCRUD', { "test": "test" }));
-  if (!err) [err]       = await to(_data.updateA('test', 'uniAsyncCRUD', { "update": "update" }));
+  if (!err) [err] = await to(_data.createA('test', 'uniAsyncCRUD', { "test": "test" }));
+  if (!err) [err] = await to(_data.updateA('test', 'uniAsyncCRUD', { "update": "update" }));
   if (!err) [err, data] = await to(_data.readA('test', 'uniAsyncCRUD'));
-  if (!err) [err]       = await to(_data.deleteA('test', 'uniAsyncCRUD'));
+  if (!err) [err] = await to(_data.deleteA('test', 'uniAsyncCRUD'));
 
   try {
     assert.equal(err, null);
@@ -106,9 +106,9 @@ usersTestData = {
       tosAgreement: true
     }
   },
-  userExisting: {    
+  userExisting: {
     payload: {
-      email : "danny@smith.cz",
+      email: "danny@smith.cz",
       firstName: "danny",
       lastName: "smith",
       phone: "1111111111",
@@ -120,117 +120,183 @@ usersTestData = {
 
 
 unit['handlers.users CRUD basic'] =
-async function (done) {
-  let pLoad = usersTestData.user;
-  try {
-    let err, userData, tokenData, res;
+  async function (done) {
+    let pLoad = usersTestData.user;
+    try {
+      let err, userData, tokenData, res;
 
-    // delete user in case it is left from previous unsuccessful test
-    pLoad.method = 'delete';
-    [err, userData] = await to(handlers._users.deleteFinal(pLoad.queryStringObject.email), false);
+      // delete user in case it is left from previous unsuccessful test
+      pLoad.method = 'delete';
+      [err, userData] = await to(handlers._users.deleteFinal(pLoad.queryStringObject.email), false);
 
-    // users.post
-    pLoad.method = 'post';
+      // users.pos
+      pLoad.method = 'post';
 
-    [err, userData] = await to(handlers.usersA(pLoad));
-    assert.equal(err, null);
-    assert.equal(userData.resCode, 200);
+      [err, userData] = await to(handlers.usersA(pLoad));
+      assert.equal(err, null);
+      assert.equal(userData.resCode, 200);
 
-    // tokens.post
-    pLoad.method = 'post';
-    [err, tokenData] = await to (handlers.tokensA(pLoad));
-    assert.equal(tokenData.resCode, 200);
-    assert.equal(tokenData.payload.email, pLoad.payload.email);
+      // tokens.post
+      pLoad.method = 'post';
+      [err, tokenData] = await to(handlers.tokensA(pLoad));
+      assert.equal(tokenData.resCode, 200);
+      assert.equal(tokenData.payload.email, pLoad.payload.email);
 
-    pLoad.headers.token = tokenData.payload.id;
+      pLoad.headers.token = tokenData.payload.id;
 
-    // users.put
-    pLoad.method = 'put';
-    pLoad.payload.firstName = 'honza';
-    [err, userData] = await to (handlers.usersA(pLoad));
-    assert.equal(userData.resCode, 200);
+      // users.put
+      pLoad.method = 'put';
+      pLoad.payload.firstName = 'honza';
+      [err, userData] = await to(handlers.usersA(pLoad));
+      assert.equal(userData.resCode, 200);
 
-    // users.get
-    pLoad.method = 'get';
-    [err, userData] = await to (handlers.usersA(pLoad));
-    assert.equal(userData.resCode, 200);
-    assert.equal(userData.payload.email, pLoad.payload.email);
-    assert.equal(userData.payload.firstName, 'honza');
-    
-    // users.delete
-    pLoad.method = 'delete';
-    [err, userData] = await to(handlers.usersA(pLoad));
-    assert.equal(err, null);
-    assert.equal(userData.resCode, 200);
+      // users.get
+      pLoad.method = 'get';
+      [err, userData] = await to(handlers.usersA(pLoad));
+      assert.equal(userData.resCode, 200);
+      assert.equal(userData.payload.email, pLoad.payload.email);
+      assert.equal(userData.payload.firstName, 'honza');
 
-    //throwing out token
-    [err, res] = await to(handlers._tokens.deleteFinal(tokenData.payload.id));
-    assert.equal(err, null);
-    assert.equal(res.resCode, 200);
-    done();
-  } catch (e) { done(e); }
+      // users.delete
+      pLoad.method = 'delete';
+      [err, userData] = await to(handlers.usersA(pLoad));
+      assert.equal(err, null);
+      assert.equal(userData.resCode, 200);
 
+      //throwing out token
+      [err, res] = await to(handlers._tokens.deleteFinal(tokenData.payload.id));
+      assert.equal(err, null);
+      assert.equal(res.resCode, 200);
+      done();
+    } catch (e) { done(e); }
 
-};
+  };
 
 unit['handlers.tokens CRUD basic'] =
-async function (done) {
-  let pLoad = usersTestData.userExisting;
-  try {
-    let err, resO, tokenOK, tokenData;
+  async function (done) {
+    let pLoad = usersTestData.userExisting;
+    try {
+      let err, resO, tokenOK, tokenData;
 
-    pLoad.method = 'post';
-    // tokens.post
-    [err, resO] = await to(handlers.tokensA(pLoad));
-    assert.equal(resO.resCode, 200);
-    assert.equal(resO.payload.email, pLoad.payload.email);
-    
-    [err, tokenOK] = await to(handlers._tokens.verifyTokenA(resO.payload.id, resO.payload.email));
-    assert.equal(err, null);
-    assert.equal(tokenOK, true);
+      pLoad.method = 'post';
+      // tokens.post
+      [err, resO] = await to(handlers.tokensA(pLoad));
+      assert.equal(resO.resCode, 200);
+      assert.equal(resO.payload.email, pLoad.payload.email);
 
-    let data = {
-      method: 'get',
-      queryStringObject : {
-        id: resO.payload.id,
-        extend: true
-      }
-    };
+      [err, tokenOK] = await to(handlers._tokens.verifyTokenA(resO.payload.id, resO.payload.email));
+      assert.equal(err, null);
+      assert.equal(tokenOK, true);
 
-    // tokens.get
-    [err, resO] = await to(handlers.tokensA(data));
-    assert.equal(err, null);
-    assert.equal(resO.resCode, 200);
-    assert.equal(resO.payload.email, pLoad.payload.email);
+      let data = {
+        method: 'get',
+        queryStringObject: {
+          id: resO.payload.id,
+          extend: true
+        }
+      };
 
-    let dataPut = {
-      method: 'put',
-      "payload": {
-        "id": resO.payload.id,
-        "extend": true
-      }
-    };
+      // tokens.get
+      [err, resO] = await to(handlers.tokensA(data));
+      assert.equal(err, null);
+      assert.equal(resO.resCode, 200);
+      assert.equal(resO.payload.email, pLoad.payload.email);
 
-    // tokens.put
-    [err, resO] = await to(handlers.tokensA(dataPut));
-    assert.equal(err, null);
-    assert.equal(resO.resCode, 200);
+      let dataPut = {
+        method: 'put',
+        "payload": {
+          "id": resO.payload.id,
+          "extend": true
+        }
+      };
 
-    // tokens.delete
-    data.method = 'delete';
-    [err, resO] = await to(handlers.tokensA(data));
-    assert.equal(err, null);   
-    assert.equal(resO.resCode, 200);
+      // tokens.put
+      [err, resO] = await to(handlers.tokensA(dataPut));
+      assert.equal(err, null);
+      assert.equal(resO.resCode, 200);
 
-    // tokens.get
-    data.method = 'get';
-    [err, resO] = await to(handlers.tokensA(data));
-    assert.equal(err, null);
-    assert.equal(resO.resCode, 400);
+      // tokens.delete
+      data.method = 'delete';
+      [err, resO] = await to(handlers.tokensA(data));
+      assert.equal(err, null);
+      assert.equal(resO.resCode, 200);
 
-    done();
-  } catch (e) { done(e); }
+      // tokens.get
+      data.method = 'get';
+      [err, resO] = await to(handlers.tokensA(data));
+      assert.equal(err, null);
+      assert.equal(resO.resCode, 400);
+
+      done();
+    } catch (e) { done(e); }
+  };
+
+let checksData = {
+  method: 'post',
+  payload: {
+    "email": "danny@smith.cz",
+    "protocol": "http",
+    "url": "google.com",
+    "method": "get",
+    "successCodes": [
+      200,
+      201,
+      301,
+      302
+    ],
+    "timeoutSeconds": 3
+  },
+  "headers": {
+    "token": "testToken"
+  },
+  queryStringObject: {}
 };
+
+unit['handlers.checks CRUD basic'] =
+  async function (done) {
+    let data = checksData;
+    try {
+      let err, resO;
+
+      // checks.post
+      data.method = 'post';
+      [err, resO] = await to(handlers.checksA(data));
+      assert.equal(err, null);
+      assert.equal(resO.payload.email, checksData.payload.email);
+
+      // checks.get
+      data.method = 'put';
+      data.queryStringObject.id = resO.payload.id;
+      data.payload.id = resO.payload.id;
+      delete data.payload.email;
+      delete data.payload.protocol;
+      delete data.payload.method;
+      delete data.payload.successCodes;
+      delete data.payload.timeoutSeconds;
+      data.payload.url = "twitter.com";
+      resO = {};
+      [err, resO] = await to(handlers.checksA(data));
+      assert.equal(err, null);
+
+      // checks.get
+      data.method = 'get';
+      resO = {};
+      [err, resO] = await to(handlers.checksA(data));
+      assert.equal(err, null);
+      assert.equal(resO.payload.url, "twitter.com");
+
+      // checks.delete
+      data.method = 'delete';
+      data.queryStringObject = {};
+      data.queryStringObject.id = resO.payload.id;
+      resO = {};
+      [err, resO] = await to(handlers.checksA(data));
+      assert.equal(err, null);
+      assert.equal(resO.resCode, 200);
+
+      done();
+    } catch (e) { done(e); }
+  };
 
 
 

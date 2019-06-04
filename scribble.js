@@ -32,11 +32,15 @@ process.on('beforeExit', () => {
 });
 
 
-let email = 'email@email.cz';
-let pattern = new RegExp(/^[a-z0-9](\.?[a-z0-9_-]){0,}@[a-z0-9-]+\.([a-z]{1,6}\.)?[a-z]{2,6}$/g);
-email = typeof (email) === 'string' && pattern.test(email.trim()) ? email.trim() : false;
-console.log(email);
+// let email = 'email@email.cz';
+// let pattern = new RegExp(/^[a-z0-9](\.?[a-z0-9_-]){0,}@[a-z0-9-]+\.([a-z]{1,6}\.)?[a-z]{2,6}$/g);
+// email = typeof (email) === 'string' && pattern.test(email.trim()) ? email.trim() : false;
+// console.log(email);
 
+
+let id = undefined;
+
+id = validate.checkId(id);
 
 
 
