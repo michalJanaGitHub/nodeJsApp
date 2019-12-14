@@ -24,14 +24,14 @@ app.init = function(callback){
   // Start the server
   server.init();
 
-  // Start the workers
+  // // Start the workers
   // workers.init();
 
-  // Start the CLI, but make sure it starts last
-  setTimeout(function(){
-    cli.init();
-    callback();
-  },50);
+  // // Start the CLI, but make sure it starts last
+  // setTimeout(function(){
+  //   cli.init();
+  //   callback();
+  // },50);
 
 };
 
