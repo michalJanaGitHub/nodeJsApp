@@ -13,6 +13,7 @@ const _data = require('./../lib/data.js');
 const _tokens = require('./../lib/data.js');
 const to = require('./../lib/to');
 const handlers = require('./../lib/handlers');
+const _checks = require(config.paths._checks);
 
 // Holder for Tests
 let unit = {};
@@ -231,6 +232,9 @@ unit['handlers.tokens CRUD basic'] =
     } catch (e) { done(e); }
   };
 
+
+// Checks
+
 let checksData = {
   method: 'post',
   payload: {
@@ -294,6 +298,32 @@ unit['handlers.checks CRUD basic'] =
       assert.equal(err, null);
       assert.equal(resO.resCode, 200);
 
+      done();
+    } catch (e) { done(e); }
+  };
+
+
+let checkData = {
+  "id": "uzq2bb1t26cyhxvw5pm8",
+  "email": "danny@smith.cz",
+  "protocol": "https",
+  "url": "google.com",
+  "method": "get",
+  "successCodes": [
+    200,
+    201,
+    301,
+    302
+  ],
+  "timeoutSeconds": 3
+};
+
+unit['performCheck basic test'] =
+  async function (done) {
+    let err, checkOutcome;
+    try {
+      [err, checkOutcome] = await to(_checks.performCheck(checkData));
+      assert.equal(err, null);
       done();
     } catch (e) { done(e); }
   };

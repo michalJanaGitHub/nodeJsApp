@@ -25,7 +25,7 @@ app.init = function(callback){
   server.init();
 
   // Start the workers
-  workers.init();
+  // workers.init();
 
   // Start the CLI, but make sure it starts last
   setTimeout(function(){

@@ -6,7 +6,7 @@
 
  
 
-let testName = 'handlers.checks CRUD basic';
+let testName = 'performCheck basic test';
 
 // Override the NODE_ENV variable
 // process.env.NODE_ENV = 'testing';
